@@ -15,6 +15,10 @@
         #filmList tr:nth-child(2n) {
             background: #f5f5f4;
         }
+
+        img{
+            height:15%;
+        }
     </style>
 </head>
 <body>
@@ -22,6 +26,7 @@
 <p>按照films.json原始顺序</p>
 <hr>
 <div id="list"></div>
+<div id="page" name="page"></div>
 <script>
     var list = document.getElementById("list");
     function newTable(filmsJson) {
@@ -32,20 +37,40 @@
          * 创建Header
          * @type {HTMLTableRowElement}
          */
-        var trObj = document.createElement("tr");
+        var trObj1 = document.createElement("tr");
+        var thObj0=document.createElement("th");
         var thObj1 = document.createElement("th");
         var thObj2 = document.createElement("th");
         var thObj3 = document.createElement("th");
+        thObj0.append("");
         thObj1.append("影片名");
         thObj2.append("评分");
         thObj3.append("导演");
-        trObj.append(thObj1, thObj2, thObj3);
-        tableObj.appendChild(trObj);
+        trObj1.append(thObj0,thObj1, thObj2, thObj3);
+        tableObj.appendChild(trObj1);
 
+        /**
+         * 生成列表内容
+         */
         var filmList=filmsJson['films'];
-
-
+        for(var i=0;i<filmList.length;i++){
+            var trObj=document.createElement("tr");
+            var posterObj=document.createElement("td");
+            var titleObj=document.createElement("td");
+            var ratingObj=document.createElement("td");
+            var directorObj=document.createElement("td");
+            var posterImg=document.createElement("img");
+            posterImg.src=filmList[i].poster;
+            posterObj.appendChild(posterImg);
+            titleObj.append(filmList[i].title);
+            ratingObj.append(filmList[i].rating.average);
+            directorObj.append(filmList[i].directors[0].name);
+            trObj.append(posterObj,titleObj,ratingObj,directorObj);
+            tableObj.appendChild(trObj);
+        }
         list.appendChild(tableObj);
+
+
     }
 
     window.onload = function getJson() {
@@ -58,7 +83,46 @@
         request.onload = function () {
             var filmsJson = JSON.parse(request.response);
             newTable(filmsJson);
+            goToPage(1);
         }
+    }
+    function goToPage(num) {
+        var tableObj = document.getElementById("filmList");
+        var length = tableObj.rows.length;
+        var totalPage;
+        var pageSize = 50;
+
+        if (length / pageSize > parseInt(length / pageSize)) {
+            totalPage = parseInt(length / pageSize) + 1;
+        } else {
+            totalPage = parseInt(length / pageSize);
+        }
+        
+        var currentPage = num;
+        var startRow = (currentPage - 1) * pageSize + 1;
+        var endRow = currentPage * pageSize;
+        endRow = (endRow > length) ? length : endRow;
+
+        for (var i = 1; i < (length + 1); i++) {
+            var irow = tableObj.rows[i - 1];
+            if (i >= startRow && i <= endRow) {
+                irow.style.display = "";
+            } else {
+                irow.style.display = "none";
+            }
+        }
+        var tempStr = "";
+        if (currentPage > 1) {
+            tempStr += "<a href=\"#\" onClick=\"goToPage(" + (currentPage - 1) + "," + pageSize + ")\"><上一页&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>";
+        } else {
+            tempStr += "<上一页&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+        }
+        if (currentPage < totalPage) {
+            tempStr += "<a href=\"#\" onClick=\"goToPage(" + (currentPage + 1) + "," + pageSize + ")\">下一页>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>";
+        } else {
+            tempStr += "  下一页>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+        }
+        document.getElementById("page").innerHTML = tempStr;
     }
 </script>
 </body>
