@@ -23,7 +23,8 @@ function newTable(filmsJson) {
     /**
      * 生成列表内容
      */
-    var filmList = filmsJson['films'];
+    //var filmList = filmsJson['films'];
+    var filmList=filmsJson;
     for (var i = 0; i < filmList.length; i++) {
         var trObj = document.createElement("tr");
         var posterObj = document.createElement("td");
@@ -49,10 +50,11 @@ function newTable(filmsJson) {
 }
 
 window.onload = function getJson() {
-    var requestURL = './films.json';
+    //var requestURL = './films.json';
+    var requestURL='getData.php';
     var request = new XMLHttpRequest();
     request.open('GET', requestURL);
-    request.responseType = 'text';
+    //request.responseType = 'text';
     request.send();
 
     request.onload = function () {
