@@ -8,6 +8,9 @@ class MongoDBClient
     private $collection;
     private $pageSize;
 
+    /**
+     * MongoDBClient constructor.
+     */
     public function __construct()
     {
         $this->mongoDB = new MongoDB\Driver\Manager("mongodb://localhost:27017");
@@ -16,6 +19,10 @@ class MongoDBClient
         $this->pageSize = 50;
     }
 
+    /**获取页面总数
+     * @return float
+     * @throws \MongoDB\Driver\Exception\Exception
+     */
     public function getPageCount()
     {
         $command = new MongoDB\Driver\Command(['count' => $this->collection]);
@@ -23,6 +30,11 @@ class MongoDBClient
         return ceil(($result->toArray()[0]->n) / $this->pageSize);
     }
 
+    /**获取页面数据
+     * @param $pageNum
+     * @return false|string
+     * @throws \MongoDB\Driver\Exception\Exception
+     */
     public function getPageData($pageNum)
     {
         $skip = ($pageNum - 1) * $this->pageSize;
