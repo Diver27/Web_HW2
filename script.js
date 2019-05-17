@@ -17,14 +17,14 @@ function newTable(filmsJson) {
     thObj1.append("影片名");
     thObj2.append("评分");
     thObj3.append("导演");
-    trObj1.append(thObj0, thObj1, thObj2,thObj3);
+    trObj1.append(thObj0, thObj1, thObj2, thObj3);
     tableObj.appendChild(trObj1);
 
     /**
      * 生成列表内容
      */
-    //var filmList = filmsJson['films'];
-    var filmList=filmsJson;
+        //var filmList = filmsJson['films'];
+    var filmList = filmsJson;
     for (var i = 0; i < filmList.length; i++) {
         var trObj = document.createElement("tr");
         var posterObj = document.createElement("td");
@@ -41,78 +41,127 @@ function newTable(filmsJson) {
         titleObj.append(filmList[i].title);
         ratingObj.append(filmList[i].rating.average);
         directorObj.append(filmList[i].directors[0].name);
-        trObj.append(posterObj, titleObj, ratingObj,directorObj);
+        trObj.append(posterObj, titleObj, ratingObj, directorObj);
         tableObj.appendChild(trObj);
     }
+    list.innerHTML="";
     list.appendChild(tableObj);
 
 
 }
 
-window.onload = function getJson() {
-    //var requestURL = './films.json';
-    var requestURL='getData.php';
+// window.onload = function getJson() {
+//     //var requestURL = './films_test.json';
+//     var requestURL='getData.php';
+//     var request = new XMLHttpRequest();
+//     request.open('GET', requestURL);
+//     //request.responseType = 'text';
+//     request.send();
+//
+//     request.onload = function () {
+//         var filmsJson = JSON.parse(request.response);
+//         newTable(filmsJson);
+//         goToPage(1);
+//     }
+// }
+//
+function goToPage(num, pageCount) {
+
+    var totalPage = pageCount;
+    var pageSize = 50;
+
+    var currentPage = num;
+    var startRow = 1;
+    var endRow = pageSize;
+    endRow = (endRow > length) ? length : endRow;
+    /**
+     * 创建导航页签
+     * @type {string}
+     */
+        // var tempStr = "";
+        // if (currentPage > 1) {
+        //     tempStr += "<li><a href=\"#\" onClick=\"goToPage(" + (currentPage - 1) + "," + pageSize + ")\"><上一页&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a></li>";
+        //     // for (var j = 1; j <= totalPage; j++) {
+        //     //     tempStr += "<li><a href=\"#\" onClick=\"goPage(" + j + "," + pageSize + ")\">" + j + "&nbsp;&nbsp;&nbsp;</a></li>"
+        //     // }
+        // } else {
+        //     tempStr += "<li><a><上一页&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a></li>";
+        // }
+        // for (var j = 1; j <= totalPage; j++) {
+        //     if (j == currentPage) {
+        //         tempStr += "<li><a class=\"active\" href=\"#\" onClick=\"goToPage(" + j + ")\">" + j + "&nbsp;&nbsp;&nbsp;</a></li>"
+        //         continue;
+        //     }
+        //     tempStr += "<li><a href=\"#\" onClick=\"goToPage(" + j + ")\">" + j + "&nbsp;&nbsp;&nbsp;</a></li>"
+        // }
+        // if (currentPage < totalPage) {
+        //     tempStr += "<li><a href=\"#\" onClick=\"goToPage(" + (currentPage + 1) + ")\">下一页>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a></li>";
+        //     // for (var j = 1; j <= totalPage; j++) {
+        //     //     tempStr += "<li><a href=\"#\" onClick=\"goPage(" + j + "," + pageSize + ")\">" + j + "&nbsp;&nbsp;&nbsp;</a></li>"
+        //     // }
+        // } else {
+        //     tempStr += "<li><a>下一页>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a></li>";
+        // }
+
+    var paginationInfo = "<ul class=\"pagination\" >" +
+        "<li><a href=\"javascript:void(0);\" " +
+        " onclick=\"goToPage(" + (currentPage - 1) + " , " + totalPage + ")\"" + ">«</a></li>";
+
+    if (totalPage <= 10) {
+        for (var i = 1; i <= totalPage; i++) {
+            paginationInfo += "<li><a href=\"javascript:void(0);\" " +
+                " onclick=\"goToPage(" + i + " , " + totalPage + ")\">" + i + "</a></li>";
+        }
+    } else {
+        if (currentPage <= 3) {
+            for (var i = 1; i <= currentPage + 2; i++) {
+                paginationInfo += "<li><a href=\"javascript:void(0);\" " +
+                    " onclick=\"goToPage(" + i + " , " + totalPage + ")\">" + i + "</a></li>";
+            }
+            paginationInfo += "<li><a href=\"#\">...</a></li>";
+            paginationInfo += "<li><a href=\"javascript:void(0);\" " +
+                " onclick=\"goToPage(" + totalPage + " , " + totalPage + ")\">" + totalPage + "</a></li>";
+        } else if (currentPage <= totalPage - 5) {
+            paginationInfo += "<li><a href=\"javascript:void(0);\" " +
+                " onclick=\"goToPage(" + 1 + " , " + totalPage + ")\">" + 1 + "</a></li>";
+
+            paginationInfo += "<li><a href=\"#\">...</a></li>";
+            for (var i = currentPage - 1; i <= currentPage + 2; i++) {
+                paginationInfo += "<li><a href=\"javascript:void(0);\" " + " onclick=\"goToPage(" + i + " , " + totalPage + ")\">" + i + "</a></li>";
+            }
+            paginationInfo += "<li><a href=\"#\">...</a></li>";
+            paginationInfo += "<li><a href=\"javascript:void(0);\" " + " onclick=\"goToPage(" + totalPage + " , " + totalPage + ")\">" + totalPage + "</a></li>";
+        } else {
+            paginationInfo += "<li><a href=\"javascript:void(0);\" " + " onclick=\"goToPage(" + 1 + " , " + totalPage + ")\">" + 1 + "</a></li>";
+            paginationInfo += "<li><a href=\"#\">...</a></li>";
+            for (var i = currentPage - 1; i <= totalPage; i++) {
+                paginationInfo += "<li><a href=\"javascript:void(0);\" " + " onclick=\"goToPage(" + i + " , " + totalPage + ")\">" + i + "</a></li>";
+            }
+        }
+    }
+
+    paginationInfo += "<li><a href=\"javascript:void(0);\" " + " onclick=\"goToPage(" + (currentPage + 1) + " , " + totalPage + ")\"" + ">»</a></li>";
+    document.getElementById("page").innerHTML = paginationInfo;
+
+    var requestURL = 'getData.php?action=goToPage&pageNum=' + num.toString();
     var request = new XMLHttpRequest();
     request.open('GET', requestURL);
-    //request.responseType = 'text';
     request.send();
 
     request.onload = function () {
-        var filmsJson = JSON.parse(request.response);
-        newTable(filmsJson);
-        goToPage(1);
+        var filmJSON=JSON.parse(request.response);
+        newTable(filmJSON);
     }
 }
 
-function goToPage(num) {
-    var tableObj = document.getElementById("filmList");
-    var length = tableObj.rows.length;
-    var totalPage;
-    var pageSize = 50;
+window.onload = function getPageCount() {
+    var requestURL = 'getData.php?action=getPageCount';
+    var request = new XMLHttpRequest();
+    request.open('GET', requestURL);
+    request.send();
 
-    if (length / pageSize > parseInt(length / pageSize)) {
-        totalPage = parseInt(length / pageSize) + 1;
-    } else {
-        totalPage = parseInt(length / pageSize);
+    request.onload = function () {
+        var pageCount = request.response;
+        goToPage(1, pageCount);
     }
-
-    var currentPage = num;
-    var startRow = (currentPage - 1) * pageSize + 1;
-    var endRow = currentPage * pageSize;
-    endRow = (endRow > length) ? length : endRow;
-
-    for (var i = 1; i < (length + 1); i++) {
-        var irow = tableObj.rows[i - 1];
-        if (i >= startRow && i <= endRow) {
-            irow.style.display = "";
-        } else {
-            irow.style.display = "none";
-        }
-    }
-    var tempStr = "";
-    if (currentPage > 1) {
-        tempStr += "<li><a href=\"#\" onClick=\"goToPage(" + (currentPage - 1) + "," + pageSize + ")\"><上一页&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a></li>";
-        // for (var j = 1; j <= totalPage; j++) {
-        //     tempStr += "<li><a href=\"#\" onClick=\"goPage(" + j + "," + pageSize + ")\">" + j + "&nbsp;&nbsp;&nbsp;</a></li>"
-        // }
-    } else {
-        tempStr += "<li><a><上一页&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a></li>";
-    }
-    for (var j = 1; j <= totalPage; j++) {
-        if (j == currentPage) {
-            tempStr += "<li><a class=\"active\" href=\"#\" onClick=\"goToPage(" + j + ")\">" + j + "&nbsp;&nbsp;&nbsp;</a></li>"
-            continue;
-        }
-        tempStr += "<li><a href=\"#\" onClick=\"goToPage(" + j + ")\">" + j + "&nbsp;&nbsp;&nbsp;</a></li>"
-    }
-    if (currentPage < totalPage) {
-        tempStr += "<li><a href=\"#\" onClick=\"goToPage(" + (currentPage + 1) + ")\">下一页>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a></li>";
-        // for (var j = 1; j <= totalPage; j++) {
-        //     tempStr += "<li><a href=\"#\" onClick=\"goPage(" + j + "," + pageSize + ")\">" + j + "&nbsp;&nbsp;&nbsp;</a></li>"
-        // }
-    } else {
-        tempStr += "<li><a>下一页>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a></li>";
-    }
-
-    document.getElementById("page").innerHTML = tempStr;
 }
