@@ -16,16 +16,44 @@ class MongoDBClient{
     private $mongoDB;
     private $DBName;
     private $collection;
+    private $pageSize;
 
-    public function _construct(){
-        $this->mongoDB=new \MongoDB\Driver\Manager("mongodb://localhost:27017");
+    public function __construct(){
+        $this->mongoDB=new MongoDB\Driver\Manager("mongodb://localhost:27017");
         $this->DBName='web';
         $this->collection='films';
+        $this->pageSize=50;
     }
 
-    public function getPageNum(){
-        $command=new \MongoDB\Driver\Command(['count'=>$this->collection]);
+    public function getPageCount(){
+        $command=new MongoDB\Driver\Command(['count'=>$this->collection]);
         $result=$this->mongoDB->executeCommand($this->DBName,$command);
+        return $result->toArray()[0]->n;
+    }
 
+    public function getPageData($pageNum)
+    {
+        $skip = ($pageNum - 1) * $this->pageSize;
+        $option = [
+            'skip' => $skip,
+            'limit' => $this->pageSize
+        ];
+        $query = new MongoDB\Driver\Query([], $option);
+        $result=null;
+        $result = $this->mongoDB->executeQuery("$this->DBName.$this->collection", $query);
+        return json_encode(iterator_to_array($result));
     }
 }
+
+$mongoDBClient=new MongoDBClient();
+$action=$_GET['action']?:exit('Parameter Error');
+$pageNum=$_GET['pageNum']?:1;
+
+$data=null;
+if($action-'getPageCount'){
+    $data=$mongoDBClient->getPageCount();
+}elseif($action='goToPage'){
+    $data=$mongoDBClient->getPageData($pageNum);
+}
+
+return $data;
